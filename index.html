@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>沖繩 5 日家庭冒險 - 互動版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 text-slate-800 pb-10">
+
+    <header class="bg-gradient-to-r from-blue-500 to-cyan-500 text-white py-10 px-6 text-center shadow-lg">
+        <h1 class="text-3xl font-bold mb-2">🌊 沖繩 5 日家庭旅遊</h1>
+        <p class="opacity-90 text-sm">點擊行程看詳情 | 留言互動 | 投票決策</p>
+    </header>
+
+    <main class="max-w-4xl mx-auto p-6 space-y-8">
+
+        <section class="bg-white rounded-2xl shadow-md p-6 border-l-8 border-purple-500">
+            <h2 class="text-xl font-bold mb-4 flex items-center text-purple-700">
+                <i class="fa-solid fa-square-poll-vertical mr-2"></i> 晚餐吃什麼？投票
+            </h2>
+            <div class="space-y-3">
+                <button onclick="vote('燒肉')" class="w-full text-left p-3 border rounded-xl hover:bg-purple-50 transition flex justify-between items-center group">
+                    <span>🔥 琉球之牛 燒肉</span>
+                    <span id="vote-燒肉" class="bg-purple-100 px-3 py-1 rounded-full text-purple-600 font-bold">0</span>
+                </button>
+                <button onclick="vote('拉麵')" class="w-full text-left p-3 border rounded-xl hover:bg-purple-50 transition flex justify-between items-center">
+                    <span>🍜 暖暮拉麵</span>
+                    <span id="vote-拉麵" class="bg-purple-100 px-3 py-1 rounded-full text-purple-600 font-bold">0</span>
+                </button>
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <h2 class="text-xl font-bold flex items-center"><i class="fa-solid fa-calendar-days mr-2"></i> 行程詳情</h2>
+            
+            <div onclick="openModal('Day 2: 自然與文化', '這是當天的詳細說明：<br>1. 植物園內有水豚可以餵食。<br>2. 鐘乳洞內路面濕滑請穿運動鞋。<br>3. 美國村摩天輪建議傍晚去拍夕陽。')" 
+                 class="bg-white p-5 rounded-2xl shadow-sm border-l-8 border-green-400 cursor-pointer hover:shadow-md transition">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-bold text-lg">Day 2：自然與文化</h3>
+                    <span class="text-blue-500 text-xs font-medium">點擊看攻略 ></span>
+                </div>
+                <p class="text-sm text-gray-500 mt-2">東南植物樂園、鐘乳洞、美國村...</p>
+            </div>
+        </section>
+
+        <section class="bg-white rounded-2xl shadow-md p-6">
+            <h2 class="text-xl font-bold mb-4 flex items-center text-blue-700">
+                <i class="fa-solid fa-comments mr-2"></i> 討論留言板
+            </h2>
+            <div class="space-y-4 mb-6">
+                <input id="userName" type="text" placeholder="你的名稱" class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+                <textarea id="userMsg" placeholder="想說什麼..." class="w-full p-2 border rounded-lg h-24 focus:outline-none focus:ring-2 focus:ring-blue-400"></textarea>
+                <button onclick="addComment()" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold w-full shadow-md hover:bg-blue-700 transition">發布留言</button>
+            </div>
+            <div id="commentList" class="space-y-4 border-t pt-4">
+                </div>
+        </section>
+
+    </main>
+
+    <div id="detailModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-6">
+        <div class="bg-white rounded-3xl w-full max-w-md overflow-hidden animate-bounce-in">
+            <div class="p-6">
+                <h3 id="modalTitle" class="text-2xl font-bold mb-4"></h3>
+                <div id="modalBody" class="text-gray-600 text-sm leading-relaxed"></div>
+            </div>
+            <button onclick="closeModal()" class="w-full bg-gray-100 py-4 font-bold text-gray-600 hover:bg-gray-200 transition">關閉</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 功能 1: 彈窗邏輯 ---
+        function openModal(title, content) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalBody').innerHTML = content;
+            document.getElementById('detailModal').classList.remove('hidden');
+        }
+        function closeModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+        }
+
+        // --- 功能 2: 留言板邏輯 ---
+        function addComment() {
+            const name = document.getElementById('userName').value;
+            const msg = document.getElementById('userMsg').value;
+            if (!name || !msg) return alert('請輸入姓名與內容');
+
+            const list = document.getElementById('commentList');
+            const newMsg = document.createElement('div');
+            newMsg.className = 'bg-slate-50 p-3 rounded-xl border';
+            newMsg.innerHTML = `<p class="text-xs font-bold text-blue-600">${name}</p><p class="text-sm">${msg}</p>`;
+            list.prepend(newMsg);
+            
+            // 清空輸入
+            document.getElementById('userMsg').value = '';
+        }
+
+        // --- 功能 3: 投票邏輯 ---
+        const voteCount = { '燒肉': 0, '拉麵': 0 };
+        function vote(option) {
+            voteCount[option]++;
+            document.getElementById(`vote-${option}`).innerText = voteCount[option];
+        }
+    </script>
+
+</body>
+</html>
